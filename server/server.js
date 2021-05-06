@@ -43,22 +43,22 @@ const typeDefs = gql`
 
 
     type Query {
-    posts(channel: String!): [Post!]
-    channels: [Channel!]!
-}
+        posts(channel: String!): [Post!]
+        channels: [Channel!]!
+    }
 
        
 
-type Mutation {
-  addPost(channel: String!, message: String!): Post
-  addChannel(name: String!): Channel
-}
+    type Mutation {
+        addPost(channel: String!, message: String!): Post
+        addChannel(name: String!): Channel
+    }
 
 
-type Subscription {
-  newPost(channel: String!): Post
-  newChannel: Channel!
-}
+    type Subscription {
+        newPost(channel: String!): Post
+        newChannel: Channel!
+    }
 
 `
 
@@ -83,7 +83,8 @@ const resolvers = {
     
     Query: {
         posts: (_, { channel }) => { 
-            return channels.filter(e => e.name === channel)
+            // return channels.filter(e => e.name === channel)[0].posts
+            return null 
          },
         channels: () => { 
             return channels
@@ -91,11 +92,19 @@ const resolvers = {
     },
     Mutation: {
         addPost: (_, { channel, message }) => {
+            console.log(message, channel)
             const post = { message, date: new Date() }
 
-            channels.find(i => i.name === channel ? i.posts.push(post) : null)
+            const foundChannel = channels.find(i => i.name === channel)
+            if ( foundChannel === undefined ){
+                return null
+            } 
+            foundChannel.post.push(post)
+
+
             pubsub.publish('NEW_POST', { newPost: post})
             return post
+  
          },
         addChannel: (_, { name }) => {  
             const channel = { name }
