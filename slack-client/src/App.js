@@ -7,7 +7,7 @@ function App() {
   const [loadPosts, { called, loading, data }] = useLazyQuery(
     PostsForChannel,
     { 
-      variables: { channel: 'Main'},
+      variables: { channel: 'general'},
       fetchPolicy: "network-only",
       pollInterval: 3000
     })
